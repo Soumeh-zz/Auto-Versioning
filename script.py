@@ -54,15 +54,15 @@ def gen_new_tag(major: bool, tag: str) -> str:
     return '.'.join(tag)
 
 if __name__ == '__main__':
-    return print(payload)
-    commits = get_commits(f'https://api.github.com/repos/{repo}/commits', payload['commits'])
-    print(commits)
-    if not commits:
-        commits = payload['commits']
-    major = check_if_major(commits)
-    tag = get_latest_tag(f'https://api.github.com/repos/{repo}/tags')
-    if not tag:
-        tag = getenv('FALLBACK_TAG', '0.0')
-    else:
-        tag = gen_new_tag(major, tag)
-    print('::set-output name=tag::'+tag)
+    print(payload)
+    #commits = get_commits(f'https://api.github.com/repos/{repo}/commits', payload['commits'])
+    #print(commits)
+    #if not commits:
+    #    commits = payload['commits']
+    #major = check_if_major(commits)
+    #tag = get_latest_tag(f'https://api.github.com/repos/{repo}/tags')
+    #if not tag:
+    #    tag = getenv('FALLBACK_TAG', '0.0')
+    #else:
+    #    tag = gen_new_tag(major, tag)
+    #print('::set-output name=tag::'+tag)
