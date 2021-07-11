@@ -6,7 +6,7 @@ runs:
   image: 'Dockerfile'
   env:
     TOKEN: ${{ inputs.token }}
-    COMMITS: ${{ inputs.commits }}
+    PAYLOAD: ${{ inputs.payload }}
     REPO: ${{ inputs.repo }}
     FALLBACK_TAG: ${{ inputs.fallback_tag }}
 inputs:
@@ -16,9 +16,9 @@ inputs:
   token:
     description: GitHub Personal Access Token. (Auto Populated)
     default: ${{ github.token }}
-  commits:
-    description: A list of commits for processing. (Auto Populated)
-    default: ${{ toJSON(github.event.commits) }}
+  payload:
+    description: The event payload for processing. (Auto Populated)
+    default: ${{ toJSON(github.event) }}
   repo:
     description: The repository to scan for the latest version in. (Auto Populated)
     default: ${{ toJSON(github.repository) }}
