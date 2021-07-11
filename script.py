@@ -3,7 +3,7 @@ from requests import get
 from json import load
 
 token = getenv('TOKEN')
-commits = getenv('COMMITS', [])
+payload = getenv('PAYLOAD', {})
 repo = getenv('REPO')
 
 def check_if_major(commits: list) -> bool:
@@ -18,6 +18,7 @@ def get_latest_tag(url: str) -> str:
     return load(json.json())[0]
 
 def gen_new_tag(tag: str) -> str:
+    commits = payload['commits']
     major = check_if_major(commits)
     tag = get_latest_tag(f'https://api.github.com/repos/{repo}/tags')
     tag = ''.join([i for i if i.isnumeric() or i == '.']).split('.')
