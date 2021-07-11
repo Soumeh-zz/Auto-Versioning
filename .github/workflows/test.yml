@@ -7,6 +7,5 @@ jobs:
       - name: Checkout Repo
         uses: actions/checkout@v2
       - name: Test
+        id: versioning
         uses: Soumeh/Auto-Versioning@main
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
