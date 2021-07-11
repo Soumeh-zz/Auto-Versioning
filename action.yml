@@ -8,6 +8,7 @@ runs:
     TOKEN: ${{ inputs.token }}
     COMMITS: ${{ inputs.commits }}
     REPO: ${{ inputs.repo }}
+    FALLBACK_TAG: ${{ inputs.fallback_tag }}
 inputs:
   fallback_tag:
     description: If no previous tag was found, use this one.

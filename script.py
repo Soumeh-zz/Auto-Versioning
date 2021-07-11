@@ -26,7 +26,7 @@ def gen_new_tag(tag: str) -> str:
     major = check_if_major(commits)
     tag = get_latest_tag(f'https://api.github.com/repos/{repo}/tags')
     if not tag:
-        return getenv('FALLBACK_TAG')
+        return getenv('FALLBACK_TAG', '0.0')
     tag = ''.join([i for i in tag if i.isnumeric() or i == '.']).split('.')
     tag = [int(i) for i in tag]
     if major:
