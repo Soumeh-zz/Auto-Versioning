@@ -12,6 +12,7 @@ inputs:
   token:
     description: GitHub Personal Access Token.
     required: true
+    default: ${{ secrets.GITHUB_TOKEN }}
 outputs:
   tag:
     description: The new version tag.
