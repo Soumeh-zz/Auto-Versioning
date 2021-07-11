@@ -14,8 +14,10 @@ def check_if_major(commits: list) -> bool:
 
 def get_latest_tag(url: str) -> str:
     headers = {'Authorization': 'token '+token}
-    request = Request(url, headers=headers, data='{"accept": "application/vnd.github.v3+json"}')
-    json = urlopen(request).read().decode('utf-8')
+    rq = Request(url, headers=headers)
+    print(rq)
+    json = urlopen(rq, data=bytes('{"accept": "application/vnd.github.v3+json"}', encoding='utf8')).read().decode('utf-8')
+    print(json)
     return loads(json.json())[0]
 
 def gen_new_tag(tag: str) -> str:
