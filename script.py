@@ -21,7 +21,7 @@ def get_latest_tag(url: str) -> str:
         result = loads(json.json())[0]['name']
     except HTTPError:
         result = '0'
-    return loads(json.json())[0]['name']
+    return result
 
 def gen_new_tag(tag: str) -> str:
     major = check_if_major(commits)
