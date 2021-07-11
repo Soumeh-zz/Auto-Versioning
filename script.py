@@ -20,7 +20,7 @@ def get_latest_tag(url: str) -> str:
 def gen_new_tag(tag: str) -> str:
     major = check_if_major(commits)
     tag = get_latest_tag(f'https://api.github.com/repos/{repo}/tags')
-    tag = ''.join([i for i if i.isnumeric() or i == '.']).split('.')
+    tag = ''.join([i for i if i.isnumeric() or i == '.'].split('.'))
     tag = [int(i) for i in tag]
     if major:
         tag[1] += 1
