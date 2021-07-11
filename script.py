@@ -16,7 +16,7 @@ def get_commits(url: str, commits: list) -> list:
     headers = {'Authorization': 'token '+token}
     rq = Request(url, headers=headers)
     try:
-        json = urlopen(rq, data=bytes(f'{"accept": "application/vnd.github.v3+json", "since": "{before}", "until", "{after}"}', encoding='utf8')).read().decode('utf-8')
+        json = urlopen(rq, data=bytes('{"accept": "application/vnd.github.v3+json", "since": "'+before+'", "until", "'+after+'"}', encoding='utf8')).read().decode('utf-8')
         return loads(json.json())
     except HTTPError:
         return []
