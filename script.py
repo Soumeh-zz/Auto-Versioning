@@ -1,5 +1,6 @@
 from os import getenv
 from urllib.request import Request, urlopen
+from urllib.error import HTTPError
 from json import loads
 
 token = getenv('TOKEN', '""')
@@ -15,10 +16,12 @@ def check_if_major(commits: list) -> bool:
 def get_latest_tag(url: str) -> str:
     headers = {'Authorization': 'token '+token}
     rq = Request(url, headers=headers)
-    print(rq)
-    json = urlopen(rq, data=bytes('{"accept": "application/vnd.github.v3+json"}', encoding='utf8')).read().decode('utf-8')
-    print(json)
-    return loads(json.json())[0]
+    try:
+        json = urlopen(rq, data=bytes('{"accept": "application/vnd.github.v3+json"}', encoding='utf8')).read().decode('utf-8')
+        result = loads(json.json())[0]['name']
+    except HTTPError:
+        result = '0'
+    return loads(json.json())[0]['name']
 
 def gen_new_tag(tag: str) -> str:
     major = check_if_major(commits)
@@ -26,9 +29,17 @@ def gen_new_tag(tag: str) -> str:
     tag = ''.join([i for i in tag if i.isnumeric() or i == '.'].split('.'))
     tag = [int(i) for i in tag]
     if major:
-        tag[1] += 1
+        try:
+            tag[1] += 1
+        except IndexError:
+            tag.append(0)
     else:
-        tag[2] += 1
+        try:
+            tag[2] += 1
+        except IndexError:
+            tag.append(0)
+            if len(tag) < 2:
+                tag.append(0)
     return '.'.join(tag)
 
 if __name__ == '__main__':

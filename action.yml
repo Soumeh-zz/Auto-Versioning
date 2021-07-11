@@ -6,14 +6,14 @@ runs:
   image: 'Dockerfile'
   env:
     TOKEN: ${{ inputs.token }}
-    PAYLOAD: ${{ inputs.payload }}
+    COMMITS: ${{ inputs.commits }}
     REPO: ${{ inputs.repo }}
 inputs:
   token:
     description: GitHub Personal Access Token. (Auto Populated)
     default: ${{ github.token }}
-  payload:
-    description: The event payload for processing. (Auto Populated)
+  commits:
+    description: A list of commits for processing. (Auto Populated)
     default: ${{ toJSON(github.event.commits) }}
   repo:
     description: The repository to scan for the latest version in. (Auto Populated)
