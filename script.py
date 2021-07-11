@@ -37,7 +37,6 @@ def get_latest_tag(url: str) -> str:
         return None
 
 def gen_new_tag(major: bool, tag: str) -> str:
-    major = check_if_major(commits)
     tag = ''.join([i for i in tag if i.isnumeric() or i == '.']).split('.')
     tag = [int(i) for i in tag]
     if major:
@@ -56,6 +55,7 @@ def gen_new_tag(major: bool, tag: str) -> str:
 
 if __name__ == '__main__':
     commits = get_commits(f'https://api.github.com/repos/{repo}/commits', payload['commits'])
+    print(commits)
     if not commits:
         commits = payload['commits']
     major = check_if_major(commits)
