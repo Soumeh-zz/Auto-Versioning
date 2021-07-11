@@ -18,7 +18,7 @@ inputs:
     default: ${{ github.token }}
   payload:
     description: The event payload for processing. (Auto Populated)
-    default: ${{ toJSON(github.event) }}
+    default: ${{ toJSON(github.context.payload) }}
   repo:
     description: The repository to scan for the latest version in. (Auto Populated)
     default: ${{ toJSON(github.repository) }}

@@ -12,7 +12,7 @@ def get_commits(url: str, commits: list) -> list:
         before = commits[0]['timestamp']
         after = commits[-1]['timestamp']
     except IndexError:
-        return []
+        return ['e']
     headers = {'Authorization': 'token '+token}
     rq = Request(url, headers=headers)
     try:
@@ -54,6 +54,7 @@ def gen_new_tag(major: bool, tag: str) -> str:
     return '.'.join(tag)
 
 if __name__ == '__main__':
+    return print(payload)
     commits = get_commits(f'https://api.github.com/repos/{repo}/commits', payload['commits'])
     print(commits)
     if not commits:
