@@ -18,15 +18,16 @@ def get_latest_tag(url: str) -> str:
     rq = Request(url, headers=headers)
     try:
         json = urlopen(rq, data=bytes('{"accept": "application/vnd.github.v3+json"}', encoding='utf8')).read().decode('utf-8')
-        result = loads(json.json())[0]['name']
+        return loads(json.json())[0]['name']
     except HTTPError:
-        result = '0'
-    return result
+        return None
 
 def gen_new_tag(tag: str) -> str:
     major = check_if_major(commits)
     tag = get_latest_tag(f'https://api.github.com/repos/{repo}/tags')
-    tag = ''.join([i for i in tag if i.isnumeric() or i == '.'].split('.'))
+    if not tag:
+        return getenv('FALLBACK_TAG')
+    tag = ''.join([i for i in tag if i.isnumeric() or i == '.']).split('.')
     tag = [int(i) for i in tag]
     if major:
         try:

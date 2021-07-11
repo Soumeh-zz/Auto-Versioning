@@ -9,6 +9,9 @@ runs:
     COMMITS: ${{ inputs.commits }}
     REPO: ${{ inputs.repo }}
 inputs:
+  fallback_tag:
+    description: If no previous tag was found, use this one.
+    default: 0.0.0
   token:
     description: GitHub Personal Access Token. (Auto Populated)
     default: ${{ github.token }}
