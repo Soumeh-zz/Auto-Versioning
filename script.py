@@ -1,10 +1,10 @@
 from os import getenv
-from requests import get
-from json import load
+from urllib.request import Request, urlopen
+from json import loads
 
-token = getenv('TOKEN')
-commits = load(getenv('COMMITS', []))
-repo = load(getenv('REPO'))
+token = getenv('TOKEN', '""')
+commits = loads(getenv('COMMITS', '[]'))
+repo = loads(getenv('REPO', '{}'))
 
 def check_if_major(commits: list) -> bool:
     for commit in commits:
@@ -14,13 +14,14 @@ def check_if_major(commits: list) -> bool:
 
 def get_latest_tag(url: str) -> str:
     headers = {'Authorization': 'token '+token}
-    json = get(url, headers=headers, params={'accept': 'application/vnd.github.v3+json'})
-    return load(json.json())[0]
+    request = Request(url, headers=headers, data='{"accept": "application/vnd.github.v3+json"}')
+    json = urlopen(request).read().decode('utf-8')
+    return loads(json.json())[0]
 
 def gen_new_tag(tag: str) -> str:
     major = check_if_major(commits)
     tag = get_latest_tag(f'https://api.github.com/repos/{repo}/tags')
-    tag = ''.join([i for i if i.isnumeric() or i == '.'].split('.'))
+    tag = ''.join([i for i in tag if i.isnumeric() or i == '.'].split('.'))
     tag = [int(i) for i in tag]
     if major:
         tag[1] += 1
