@@ -2,7 +2,7 @@ name: 'automatic-actions'
 description: 'Get a new version tag for your next release.'
 author: 'Soumeh'
 runs:
-  using: 'docker
+  using: 'docker'
   image: 'Dockerfile'
   env:
     TOKEN: ${{ inputs.token }}
