@@ -1,0 +1,20 @@
+name: 'automatic-actions'
+description: 'Get a new version tag for your next release.'
+author: 'Soumeh'
+runs:
+  using: 'docker
+  image: 'Dockerfile'
+  env:
+    TOKEN: ${{ inputs.token }}
+    COMMITS: ${{ github.event.commits }}
+    REPO: ${{ github.repository }}
+inputs:
+  token:
+    description: GitHub Personal Access Token.
+    required: true
+outputs:
+  tag:
+    description: The new version tag.
+branding:
+  icon:  'chevrons-up'
+  color: 'gray-dark'
