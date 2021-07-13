@@ -13,6 +13,7 @@ def get_files(url: str) -> list:
     rq = Request(url, headers=headers)
     try:
         request = urlopen(rq, data=bytes('{"accept": "application/vnd.github.v3+json"}', encoding='utf8')).read().decode('utf-8')
+        print(url)
         print(request)
         return loads(request.json())['files']
     except HTTPError as e:
