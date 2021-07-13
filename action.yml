@@ -6,8 +6,7 @@ runs:
   image: 'Dockerfile'
   env:
     TOKEN: ${{ inputs.token }}
-    BEFORE: ${{ inputs.before }}
-    AFTER: ${{ inputs.after }}
+    COMMITS: ${{ inputs.commits }}
     REPO: ${{ inputs.repo }}
     FALLBACK_TAG: ${{ inputs.fallback_tag }}
 inputs:
@@ -17,7 +16,7 @@ inputs:
   token:
     description: GitHub Personal Access Token. (Auto Populated)
     default: ${{ github.token }}
-  before:
+  commits:
     description: List of commits to determine the new version with. (Auto Populated)
     default: ${{ toJSON(github.event.commits) }}
   repo:
