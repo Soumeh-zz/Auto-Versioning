@@ -57,6 +57,7 @@ if __name__ == '__main__':
         tag = gen_new_tag(major, tag)
     changelog_str = ''
     for change, values in changelog.items():
+        print([change.title()+': '] + values)
         if values:
             changelog_str += '%0A- '.join([change.title()+': '] + values)+'%0A'
     print('::set-output name=tag::'+tag)
