@@ -37,6 +37,7 @@ def gen_new_tag(major: bool, tag: str) -> str:
             tag[1] += 1
         except IndexError:
             tag.append(0)
+        tag[2] = 0
     else:
         try:
             tag[2] += 1
