@@ -7,25 +7,34 @@ token = getenv('TOKEN', '""')
 payload = loads(getenv('PAYLOAD', '{"commits": []}'))
 repo = loads(getenv('REPO', '{}'))
 
-def get_commits(url: str, commits: list) -> list:
-    try:
-        before = commits[0]['timestamp']
-        after = commits[-1]['timestamp']
-    except IndexError:
-        return ['e']
+def get_files(url: str) -> list:
     headers = {'Authorization': 'token '+token}
     rq = Request(url, headers=headers)
     try:
-        json = urlopen(rq, data=bytes('{"accept": "application/vnd.github.v3+json", "since": "'+before+'", "until", "'+after+'"}', encoding='utf8')).read().decode('utf-8')
-        return loads(json.json())
+        json = urlopen(rq, data=bytes('{"accept": "application/vnd.github.v3+json"}', encoding='utf8')).read().decode('utf-8')
+        return loads(json.json())['files']
     except HTTPError:
         return []
 
-def check_if_major(commits: list) -> bool:
-    for commit in commits:
-        if 'added' in commit or 'renamed' in commit:
-            return True
-    return False
+def parse_changes(files: list) -> bool:
+    changelog = {"added": [], "renamed": [], "deleted": [], "changed": []}
+    major = False
+    for file in files:
+        status = file['status']
+        filename = file['filename']
+        if status == 'renamed':
+            if not major:
+                major = True
+            changelog['renamed'].append('`'+file['old_name']+'` → `'+file['new_name']+'`')
+        if status == 'added':
+            if not major:
+                major = True
+            changelog['added'].append('`'+filename+'`')
+        if status == 'removed':
+            changelog['deleted'].append('`'+filename+'`')
+        if status == 'changed':
+            changelog['deleted'].append('`'+filename+'`')
+    return changelog, false
 
 def get_latest_tag(url: str) -> str:
     headers = {'Authorization': 'token '+token}
@@ -54,15 +63,15 @@ def gen_new_tag(major: bool, tag: str) -> str:
     return '.'.join(tag)
 
 if __name__ == '__main__':
-    print(payload)
-    #commits = get_commits(f'https://api.github.com/repos/{repo}/commits', payload['commits'])
-    #print(commits)
-    #if not commits:
-    #    commits = payload['commits']
-    #major = check_if_major(commits)
-    #tag = get_latest_tag(f'https://api.github.com/repos/{repo}/tags')
-    #if not tag:
-    #    tag = getenv('FALLBACK_TAG', '0.0')
-    #else:
-    #    tag = gen_new_tag(major, tag)
-    #print('::set-output name=tag::'+tag)
+    files = get_files(f'https://api.github.com/repos/{repo}/compare/{payload["before"]}...{payload["after"]}')
+    changelog, major = parse_changes(files)
+    tag = get_latest_tag(f'https://api.github.com/repos/{repo}/tags')
+    if not tag:
+        tag = getenv('FALLBACK_TAG', '0.0')
+    else:
+        tag = gen_new_tag(major, tag)
+    changelog_str = ''
+    for change, values in changelog.items():
+        changelog_str += change.title()+': '+'\n- '.join(values)+'\n'
+    print('::set-output name=tag::'+tag)
+    print('::set-output name=changelog::'+changelog_str)
