@@ -18,11 +18,8 @@ inputs:
     description: GitHub Personal Access Token. (Auto Populated)
     default: ${{ github.token }}
   before:
-    description: Which commit to start looking for changes in. (Auto Populated)
-    default: ${{ github.event.before }}
-  after:
-    description: Which commit to end looking for changes in. (Auto Populated)
-    default: ${{ github.event.after }}
+    description: List of commits to determine the new version with. (Auto Populated)
+    default: ${{ toJSON(github.event.commits) }}
   repo:
     description: The repository to scan for the latest version in. (Auto Populated)
     default: ${{ github.repository }}
