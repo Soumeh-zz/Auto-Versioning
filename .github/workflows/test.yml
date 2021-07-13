@@ -9,3 +9,7 @@ jobs:
       - name: Test
         id: versioning
         uses: Soumeh/Auto-Versioning@main
+      - name: Verify
+        run: |
+          echo "${{ steps.versioning.outputs.tag }}"
+          echo "${{ steps.versioning.outputs.changelog }}"
