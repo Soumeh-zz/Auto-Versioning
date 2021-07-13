@@ -59,6 +59,6 @@ if __name__ == '__main__':
     changelog_str = ''
     for change, values in changelog.items():
         if values:
-            changelog_str += f'{change.title()}: '+''.join(['%0A- '+value for value in values])+'%0A'
+            changelog_str += f'{change.title()}: '+''.join(['%0A• '+value for value in values])+'%0A'
     print('::set-output name=tag::'+tag)
     print('::set-output name=changelog::'+changelog_str)
