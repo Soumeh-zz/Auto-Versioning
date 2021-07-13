@@ -56,6 +56,7 @@ if __name__ == '__main__':
     else:
         tag = gen_new_tag(major, tag)
     changelog_str = ''
+    print(changelog)
     for change, values in changelog.items():
         if values:
             changelog_str += change.title()+': '+'\n- '.join(values)+'\n'
