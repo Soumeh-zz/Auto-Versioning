@@ -49,8 +49,9 @@ def gen_new_tag(major: bool, tag: str) -> str:
 if __name__ == '__main__':
     files = get_data(f'https://api.github.com/repos/{repo}/compare/{before}...{after}')['files']
     changelog, major = parse_changes(files)
-    tag = get_data(f'https://api.github.com/repos/{repo}/tags')[0]['name']
-    if not tag:
+    try:
+        tag = get_data(f'https://api.github.com/repos/{repo}/tags')[0]['name']
+    except IndexError:
         tag = getenv('FALLBACK_TAG', '0.0')
     else:
         tag = gen_new_tag(major, tag)
