@@ -28,7 +28,8 @@ def parse_changes(files: list) -> bool:
     return changelog, major
 
 def get_data(url: str) -> str:
-    request = Request(url, headers={})#'Authorization': 'token '+token})
+    request = Request(url, headers={'Authorization': 'token '+token})
+    print(url)
     result = urlopen(request, data=bytes('{"accept": "application/vnd.github.v3+json"}', encoding='utf8'))
     return load(result)
 
