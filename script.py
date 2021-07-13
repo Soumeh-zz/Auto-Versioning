@@ -12,7 +12,6 @@ def parse_changes(files: list) -> bool:
     major = False
     for file in files:
         status = file['status']
-        print(status)
         if not major:
             if status == 'renamed' or status == 'added':
                 major = True
@@ -57,9 +56,8 @@ if __name__ == '__main__':
     else:
         tag = gen_new_tag(major, tag)
     changelog_str = ''
-    print(changelog)
     for change, values in changelog.items():
         if values:
-            changelog_str += change.title()+': '+'\n- '.join(values)+'\n'
+            changelog_str += '\n- '.join([change.title()+': '] + values)+'\n'
     print('::set-output name=tag::'+tag)
     print('::set-output name=changelog::'+changelog_str)
