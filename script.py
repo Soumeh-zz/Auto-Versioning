@@ -3,10 +3,11 @@ from urllib.request import Request, urlopen
 from urllib.error import HTTPError
 from json import loads
 
-token = getenv('TOKEN', '""')
+token = getenv('TOKEN', '')
 headers = {'Authorization': 'token '+token}
-payload = loads(getenv('PAYLOAD', '{"before": "", "after": ""}'))
-repo = loads(getenv('REPO', '{}'))
+before = loads(getenv('BEFORE', ''))
+after = loads(getenv('AFTER', ''))
+repo = loads(getenv('REPO', ''))
 
 def get_files(url: str) -> list:
     rq = Request(url, headers=headers)
@@ -14,7 +15,8 @@ def get_files(url: str) -> list:
         request = urlopen(rq, data=bytes('{"accept": "application/vnd.github.v3+json"}', encoding='utf8')).read().decode('utf-8')
         print(request)
         return loads(request.json())['files']
-    except HTTPError:
+    except HTTPError as e:
+        print(e)
         return []
 
 def parse_changes(files: list) -> bool:
@@ -63,8 +65,7 @@ def gen_new_tag(major: bool, tag: str) -> str:
     return '.'.join(tag)
 
 if __name__ == '__main__':
-    files = get_files(f'https://api.github.com/repos/{repo}/compare/{payload["before"]}...{payload["after"]}')
-    print(files)
+    files = get_files(f'https://api.github.com/repos/{repo}/compare/{before}...{after}')
     changelog, major = parse_changes(files)
     tag = get_latest_tag(f'https://api.github.com/repos/{repo}/tags')
     if not tag:

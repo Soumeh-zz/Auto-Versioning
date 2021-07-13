@@ -6,7 +6,8 @@ runs:
   image: 'Dockerfile'
   env:
     TOKEN: ${{ inputs.token }}
-    PAYLOAD: ${{ inputs.payload }}
+    BEFORE: ${{ inputs.before }}
+    AFTER: ${{ inputs.after }}
     REPO: ${{ inputs.repo }}
     FALLBACK_TAG: ${{ inputs.fallback_tag }}
 inputs:
@@ -16,15 +17,20 @@ inputs:
   token:
     description: GitHub Personal Access Token. (Auto Populated)
     default: ${{ github.token }}
-  payload:
-    description: The event payload for processing. (Auto Populated)
-    default: ${{ toJSON(github.event) }}
+  before:
+    description: Which commit to start looking for changes in. (Auto Populated)
+    default: ${{ toJSON(github.event.before) }}
+  after:
+    description: Which commit to end looking for changes in. (Auto Populated)
+    default: ${{ toJSON(github.event.after) }}
   repo:
     description: The repository to scan for the latest version in. (Auto Populated)
     default: ${{ toJSON(github.repository) }}
 outputs:
   tag:
     description: The new version tag.
+  changelog:
+    description: Multi-line string changelog.
 branding:
   icon:  'chevrons-up'
   color: 'gray-dark'
