@@ -4,7 +4,7 @@ from urllib.error import HTTPError
 from json import loads
 
 token = getenv('TOKEN', '""')
-payload = loads(getenv('PAYLOAD', '{"commits": []}'))
+payload = loads(getenv('PAYLOAD', '{"before": "", "after": ""}'))
 repo = loads(getenv('REPO', '{}'))
 
 def get_files(url: str) -> list:
@@ -34,7 +34,7 @@ def parse_changes(files: list) -> bool:
             changelog['deleted'].append('`'+filename+'`')
         if status == 'changed':
             changelog['deleted'].append('`'+filename+'`')
-    return changelog, false
+    return changelog, major
 
 def get_latest_tag(url: str) -> str:
     headers = {'Authorization': 'token '+token}
@@ -73,6 +73,7 @@ if __name__ == '__main__':
         tag = gen_new_tag(major, tag)
     changelog_str = ''
     for change, values in changelog.items():
-        changelog_str += change.title()+': '+'\n- '.join(values)+'\n'
+        if values:
+            changelog_str += change.title()+': '+'\n- '.join(values)+'\n'
     print('::set-output name=tag::'+tag)
     print('::set-output name=changelog::'+changelog_str)
