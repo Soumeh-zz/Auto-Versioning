@@ -1,6 +1,5 @@
 from os import getenv
-from urllib.request import Request, urlopen
-from urllib.error import HTTPError
+from requests import get
 from json import load
 
 token = getenv('TOKEN', '')
@@ -28,10 +27,7 @@ def parse_changes(files: list) -> bool:
     return changelog, major
 
 def get_data(url: str) -> str:
-    request = Request(url, headers={'Authorization': 'token '+token})
-    print(url)
-    result = urlopen(request, data=bytes('{"accept": "application/vnd.github.v3+json"}', encoding='utf8'))
-    return load(result)
+    return get(url, headers={'Authorization': 'token '+token}).json()
 
 def gen_new_tag(major: bool, tag: str) -> str:
     tag = ''.join([i for i in tag if i.isnumeric() or i == '.']).split('.')
