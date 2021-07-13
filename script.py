@@ -5,34 +5,22 @@ from json import loads
 
 token = getenv('TOKEN', '')
 headers = {'Authorization': 'token '+token}
-before = loads(getenv('BEFORE', ''))
-after = loads(getenv('AFTER', ''))
-repo = loads(getenv('REPO', ''))
-
-def get_files(url: str) -> list:
-    rq = Request(url, headers=headers)
-    try:
-        request = urlopen(rq, data=bytes('{"accept": "application/vnd.github.v3+json"}', encoding='utf8')).read().decode('utf-8')
-        print(url)
-        print(request)
-        return loads(request.json())['files']
-    except HTTPError as e:
-        print(e)
-        return []
+before = getenv('BEFORE', '')
+after = getenv('AFTER', '')
+repo = getenv('REPO', '')
 
 def parse_changes(files: list) -> bool:
     changelog = {"added": [], "renamed": [], "deleted": [], "changed": []}
     major = False
     for file in files:
         status = file['status']
+        if not major:
+            if status == 'renamed' or status == 'added':
+                major = True
         filename = file['filename']
         if status == 'renamed':
-            if not major:
-                major = True
             changelog['renamed'].append('`'+file['previous_filename']+'` → `'+filename+'`')
         if status == 'added':
-            if not major:
-                major = True
             changelog['added'].append('`'+filename+'`')
         if status == 'removed':
             changelog['deleted'].append('`'+filename+'`')
@@ -40,11 +28,12 @@ def parse_changes(files: list) -> bool:
             changelog['deleted'].append('`'+filename+'`')
     return changelog, major
 
-def get_latest_tag(url: str) -> str:
+def get_data(url: str) -> str:
     rq = Request(url, headers=headers)
+    print(url)
     try:
-        request = urlopen(rq, data=bytes('{"accept": "application/vnd.github.v3+json"}', encoding='utf8')).read().decode('utf-8')
-        return loads(request.json())[0]['name']
+        result = urlopen(rq, data=bytes('{"accept": "application/vnd.github.v3+json"}', encoding='utf8')).read().decode('utf-8')
+        return loads(result.json())[0]['name']
     except HTTPError:
         return None
 
@@ -66,9 +55,9 @@ def gen_new_tag(major: bool, tag: str) -> str:
     return '.'.join(tag)
 
 if __name__ == '__main__':
-    files = get_files(f'https://api.github.com/repos/{repo}/compare/{before}...{after}')
+    files = get_data(f'https://api.github.com/repos/{repo}/compare/{before}...{after}')['files']
     changelog, major = parse_changes(files)
-    tag = get_latest_tag(f'https://api.github.com/repos/{repo}/tags')
+    tag = get_data(f'https://api.github.com/repos/{repo}/tags')[0]['name']
     if not tag:
         tag = getenv('FALLBACK_TAG', '0.0')
     else:
