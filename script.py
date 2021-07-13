@@ -4,17 +4,16 @@ from urllib.error import HTTPError
 from json import loads
 
 token = getenv('TOKEN', '""')
+headers = {'Authorization': 'token '+token}
 payload = loads(getenv('PAYLOAD', '{"before": "", "after": ""}'))
 repo = loads(getenv('REPO', '{}'))
 
 def get_files(url: str) -> list:
-    headers = {'Authorization': 'token '+token}
-    print(url)
     rq = Request(url, headers=headers)
     try:
-        json = urlopen(rq, data=bytes('{"accept": "application/vnd.github.v3+json"}', encoding='utf8')).read().decode('utf-8')
-        print(loads(json.json()))
-        return loads(json.json())['files']
+        request = urlopen(rq, data=bytes('{"accept": "application/vnd.github.v3+json"}', encoding='utf8')).read().decode('utf-8')
+        print(request)
+        return loads(request.json())['files']
     except HTTPError:
         return []
 
@@ -27,7 +26,7 @@ def parse_changes(files: list) -> bool:
         if status == 'renamed':
             if not major:
                 major = True
-            changelog['renamed'].append('`'+file['old_name']+'` → `'+file['new_name']+'`')
+            changelog['renamed'].append('`'+file['previous_filename']+'` → `'+filename+'`')
         if status == 'added':
             if not major:
                 major = True
@@ -39,11 +38,10 @@ def parse_changes(files: list) -> bool:
     return changelog, major
 
 def get_latest_tag(url: str) -> str:
-    headers = {'Authorization': 'token '+token}
     rq = Request(url, headers=headers)
     try:
-        json = urlopen(rq, data=bytes('{"accept": "application/vnd.github.v3+json"}', encoding='utf8')).read().decode('utf-8')
-        return loads(json.json())[0]['name']
+        request = urlopen(rq, data=bytes('{"accept": "application/vnd.github.v3+json"}', encoding='utf8')).read().decode('utf-8')
+        return loads(request.json())[0]['name']
     except HTTPError:
         return None
 
