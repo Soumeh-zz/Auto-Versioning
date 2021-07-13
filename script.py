@@ -44,7 +44,7 @@ def gen_new_tag(major: bool, tag: str) -> str:
             tag.append(0)
             if len(tag) < 2:
                 tag.append(0)
-    return '.'.join(tag)
+    return '.'.join([str(i) for i in tag])
 
 if __name__ == '__main__':
     files = get_data(f'https://api.github.com/repos/{repo}/compare/{before}...{after}')['files']
