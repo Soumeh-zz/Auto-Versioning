@@ -29,12 +29,8 @@ def parse_changes(files: list) -> bool:
 
 def get_data(url: str) -> str:
     rq = Request(url, headers={'Authorization': 'token '+token})
-    print(url)
-    try:
-        result = urlopen(rq, data=bytes('{"accept": "application/vnd.github.v3+json"}', encoding='utf8')).read().decode('utf-8')
-        return loads(result.json())[0]['name']
-    except HTTPError:
-        return None
+    result = urlopen(rq, data=bytes('{"accept": "application/vnd.github.v3+json"}', encoding='utf8')).read().decode('utf-8')
+    return loads(result.json())
 
 def gen_new_tag(major: bool, tag: str) -> str:
     tag = ''.join([i for i in tag if i.isnumeric() or i == '.']).split('.')
