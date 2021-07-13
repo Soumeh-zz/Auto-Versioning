@@ -4,7 +4,6 @@ from urllib.error import HTTPError
 from json import loads
 
 token = getenv('TOKEN', '')
-headers = {'Authorization': 'token '+token}
 before = getenv('BEFORE', '')
 after = getenv('AFTER', '')
 repo = getenv('REPO', '')
@@ -29,7 +28,7 @@ def parse_changes(files: list) -> bool:
     return changelog, major
 
 def get_data(url: str) -> str:
-    rq = Request(url, headers=headers)
+    rq = Request(url, headers={'Authorization': 'token '+token})
     print(url)
     try:
         result = urlopen(rq, data=bytes('{"accept": "application/vnd.github.v3+json"}', encoding='utf8')).read().decode('utf-8')

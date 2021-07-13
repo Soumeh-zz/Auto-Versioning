@@ -16,7 +16,7 @@ inputs:
     default: 0.0.0
   token:
     description: GitHub Personal Access Token. (Auto Populated)
-    default: ${{ secrets.GITHUB_TOKEN }}
+    default: ${{ github.token }}
   before:
     description: Which commit to start looking for changes in. (Auto Populated)
     default: ${{ github.event.before }}
