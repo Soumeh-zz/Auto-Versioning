@@ -52,8 +52,7 @@ if __name__ == '__main__':
     commit_ids = [commit['id'] for commit in commits]
     files = []
     for commit_id in commit_ids:
-        files.append(get_data(f'https://api.github.com/repos/{repo}/commits/{commit_id}')['files'])
-    print(files)
+        files += get_data(f'https://api.github.com/repos/{repo}/commits/{commit_id}')['files']
     changelog, major = parse_changes(files)
     try:
         tag = get_data(f'https://api.github.com/repos/{repo}/tags')[0]['name']
