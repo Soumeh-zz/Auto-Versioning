@@ -9,9 +9,11 @@ repo = loads(getenv('REPO', '{}'))
 
 def get_files(url: str) -> list:
     headers = {'Authorization': 'token '+token}
+    print(url)
     rq = Request(url, headers=headers)
     try:
         json = urlopen(rq, data=bytes('{"accept": "application/vnd.github.v3+json"}', encoding='utf8')).read().decode('utf-8')
+        print(loads(json.json()))
         return loads(json.json())['files']
     except HTTPError:
         return []
