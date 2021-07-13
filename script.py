@@ -12,6 +12,7 @@ def parse_changes(files: list) -> bool:
     major = False
     for file in files:
         status = file['status']
+        print(status)
         if not major:
             if status == 'renamed' or status == 'added':
                 major = True
@@ -22,8 +23,8 @@ def parse_changes(files: list) -> bool:
             changelog['added'].append('`'+filename+'`')
         if status == 'removed':
             changelog['deleted'].append('`'+filename+'`')
-        if status == 'changed':
-            changelog['deleted'].append('`'+filename+'`')
+        if status == 'modified':
+            changelog['changed'].append('`'+filename+'`')
     return changelog, major
 
 def get_data(url: str) -> str:
