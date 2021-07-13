@@ -19,13 +19,13 @@ inputs:
     default: ${{ github.token }}
   before:
     description: Which commit to start looking for changes in. (Auto Populated)
-    default: ${{ toJSON(github.event.before) }}
+    default: ${{ github.event.before }}
   after:
     description: Which commit to end looking for changes in. (Auto Populated)
-    default: ${{ toJSON(github.event.after) }}
+    default: ${{ github.event.after }}
   repo:
     description: The repository to scan for the latest version in. (Auto Populated)
-    default: ${{ toJSON(github.repository) }}
+    default: ${{ github.repository }}
 outputs:
   tag:
     description: The new version tag.

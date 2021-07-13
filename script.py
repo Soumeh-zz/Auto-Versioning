@@ -3,11 +3,11 @@ from urllib.request import Request, urlopen
 from urllib.error import HTTPError
 from json import loads
 
-token = loads(getenv('TOKEN', '""'))
+token = getenv('TOKEN', '')
 headers = {'Authorization': 'token '+token}
-before = loads(getenv('BEFORE', '""'))
-after = loads(getenv('AFTER', '""'))
-repo = loads(getenv('REPO', '""'))
+before = getenv('BEFORE', '')
+after = getenv('AFTER', '')
+repo = getenv('REPO', '')
 
 def parse_changes(files: list) -> bool:
     changelog = {"added": [], "renamed": [], "deleted": [], "changed": []}
