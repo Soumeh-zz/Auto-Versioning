@@ -64,6 +64,7 @@ def gen_new_tag(major: bool, tag: str) -> str:
 
 if __name__ == '__main__':
     files = get_files(f'https://api.github.com/repos/{repo}/compare/{payload["before"]}...{payload["after"]}')
+    print(files)
     changelog, major = parse_changes(files)
     tag = get_latest_tag(f'https://api.github.com/repos/{repo}/tags')
     if not tag:
