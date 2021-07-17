@@ -32,7 +32,10 @@ def get_data(url: str) -> str:
 
 def gen_new_tag(major: bool, tag: str) -> str:
     tag = ''.join([i for i in tag if i.isnumeric() or i == '.']).split('.')
-    tag = [int(i) for i in tag]
+    try:
+        tag = [int(i) for i in tag]
+    except ValueError:
+        return getenv('FALLBACK_TAG', '0.0')
     if major:
         try:
             tag[1] += 1
