@@ -70,6 +70,6 @@ if __name__ == '__main__':
                 changes = ''.join([f'%0A• `{value}`' for value in values])+'%0A'
             changelog_str += f'{change.title()}: {changes}'
 
-    system('echo ::set-output name=tag::'+tag)
-    system('echo ::set-output name=raw-changelog::'+dumps(changelog))
-    system('echo ::set-output name=changelog::'+changelog_str)
+    print('::set-output name=tag::'+tag)
+    print('::set-output name=raw-changelog::'+dumps(changelog))
+    print('::set-output name=changelog::'+changelog_str)
