@@ -20,8 +20,8 @@ def parse_changes(files: list, map: dict) -> bool:
 
     return changelog, min(nums)
 
-def get_data(url: str) -> str:
-    return get(url, headers={'Authorization': 'token '+token}).json()
+def get_data(url: str, token: str) -> str:
+    return get(url, headers={'Authorization': f'token {token}'}).json()
 
 def add_to_tag(tag: list, index: int) -> list:
     while len(tag) < index: tag.append(0)
@@ -33,15 +33,13 @@ if __name__ == '__main__':
 
     token, commits, repo, fallback_tag, change_map, separator = argv[1:]
 
-    print(commits)
-
     commits = loads(commits)
     change_map = loads(change_map)
 
     files = []
     commit_messages = []
     for commit in commits:
-        data = get_data(f'https://api.github.com/repos/{repo}/commits/{commit["id"]}')
+        data = get_data(f'https://api.github.com/repos/{repo}/commits/{commit["id"]}', token) # https://api.github.com/repos/Soumeh/Auto-Versioning/commits/ee3aa04c3fe7f9ea398c97a9fe8a72b4ed163509
         if 'files' in data:
             for file in data['files']:
                 files.append(file)
@@ -54,7 +52,7 @@ if __name__ == '__main__':
     if pot_lowest: lowest = min(pot_lowest)
 
     try:
-        tag = get_data(f'https://api.github.com/repos/{repo}/tags')[0]['name']
+        tag = get_data(f'https://api.github.com/repos/{repo}/tags', token)[0]['name']
     except IndexError:
         tag = fallback_tag
     tag = [int(''.join(i for i in value if i.isdigit())) for value in tag.split(separator)]
