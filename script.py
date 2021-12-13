@@ -40,6 +40,7 @@ if __name__ == '__main__':
     commit_messages = []
     for commit in commits:
         data = get_data(f'https://api.github.com/repos/{repo}/commits/{commit["id"]}', token) # https://api.github.com/repos/Soumeh/Auto-Versioning/commits/ee3aa04c3fe7f9ea398c97a9fe8a72b4ed163509
+        print(data)
         if 'files' in data:
             for file in data['files']:
                 files.append(file)
