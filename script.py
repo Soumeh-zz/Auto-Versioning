@@ -32,9 +32,11 @@ def add_to_tag(tag: list, index: int) -> list:
 
 if __name__ == '__main__':
 
-    token, commits, repo, fallback_tag, change_map, separator = argv[1:]
+    token, repo, fallback_tag, change_map, separator, commits = argv[1:]
 
-    commits = loads(commits)
+    print(commits.replace('\\n', '').replace("'", "\\'"))
+
+    commits = loads(commits.replace('\\n', '').replace("'", "\\'"))
     change_map = loads(change_map)
 
     files = []
