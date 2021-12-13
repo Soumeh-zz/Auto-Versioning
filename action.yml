@@ -6,7 +6,7 @@ inputs:
     description: GitHub Personal Access Token. Auto Populated.
     default: ${{ github.token }}
     required: false
-  fallback_tag:
+  fallback-tag:
     description: If no previous tag was found, use this one.
     default: "0.0.0"
     required: false
