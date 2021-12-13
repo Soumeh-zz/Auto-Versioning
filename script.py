@@ -1,3 +1,4 @@
+from os import system
 from sys import argv
 from requests import get
 from json import loads, dumps
@@ -20,10 +21,10 @@ def parse_changes(files: list, map: dict) -> bool:
 
     return changelog, min(nums)
 
-def get_data(url: str) -> str:
-    return get(url, headers={'Authorization': 'token '+token}).json()
+def get_data(url: str, token: str) -> str:
+    return get(url, headers={'Authorization': f'token {token}'}).json()
 
-def add_to_tag(tag: list[int], index: int) -> list[int]:
+def add_to_tag(tag: list, index: int) -> list:
     while len(tag) < index: tag.append(0)
     tag[index-1] += 1
     return tag
@@ -39,7 +40,7 @@ if __name__ == '__main__':
     files = []
     commit_messages = []
     for commit in commits:
-        data = get_data(f'https://api.github.com/repos/{repo}/commits/{commit["id"]}')
+        data = get_data(f'https://api.github.com/repos/{repo}/commits/{commit["id"]}', token)
         if 'files' in data:
             for file in data['files']:
                 files.append(file)
@@ -52,7 +53,7 @@ if __name__ == '__main__':
     if pot_lowest: lowest = min(pot_lowest)
 
     try:
-        tag = get_data(f'https://api.github.com/repos/{repo}/tags')[0]['name']
+        tag = get_data(f'https://api.github.com/repos/{repo}/tags', token)[0]['name']
     except IndexError:
         tag = fallback_tag
     tag = [int(''.join(i for i in value if i.isdigit())) for value in tag.split(separator)]
@@ -69,6 +70,6 @@ if __name__ == '__main__':
                 changes = ''.join([f'%0A• `{value}`' for value in values])+'%0A'
             changelog_str += f'{change.title()}: {changes}'
 
-    print('::set-output name=tag::'+tag)
-    print('::set-output name=changelog-json::'+dumps(changelog))
-    print('::set-output name=changelog::'+changelog_str)
+    system('echo ::set-output name=tag::'+tag)
+    system('echo ::set-output name=raw-changelog::'+dumps(changelog))
+    system('echo ::set-output name=changelog::'+changelog_str)

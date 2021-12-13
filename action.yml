@@ -6,7 +6,7 @@ inputs:
     description: GitHub Personal Access Token. Auto Populated.
     default: ${{ github.token }}
     required: false
-  fallback_tag:
+  fallback-tag:
     description: If no previous tag was found, use this one.
     default: "0.0.0"
     required: false
@@ -20,7 +20,7 @@ inputs:
     required: false
   change-map:
     description: What changes make which part of the version increase. (Explained further in README.MD)
-    default: {"removed": 2, "renamed": 1, "added": 1, "modified": 2}
+    default: '{"removed": 2, "renamed": 1, "added": 1, "modified": 2}'
     required: false
   separator:
     description:
@@ -30,16 +30,18 @@ outputs:
   tag:
     description: The new version tag.
     value: ${{ steps.logic.outputs.tag }}
-  json-changelog:
+  raw-changelog:
     description: JSON object with raw changelog data.
-    value: ${{ steps.logic.outputs.json-changelog }}
+    value: ${{ steps.logic.outputs.raw-changelog }}
   changelog:
     description: Multi-line string changelog.
     value: ${{ steps.logic.outputs.changelog }}
 branding:
-  icon:  'chevrons-up'
+  icon: 'chevrons-up'
   color: 'gray-dark'
 runs:
+  using: "composite"
+  steps:
   - run: python -m pip install -r requirements.txt
     shell: bash
   - id: logic
