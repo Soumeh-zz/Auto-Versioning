@@ -33,6 +33,8 @@ if __name__ == '__main__':
 
     token, commits, repo, fallback_tag, change_map, separator = argv[1:]
 
+    print(commits)
+
     commits = loads(commits)
     change_map = loads(change_map)
 
