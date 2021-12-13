@@ -23,7 +23,7 @@ def parse_changes(files: list, map: dict) -> bool:
 def get_data(url: str) -> str:
     return get(url, headers={'Authorization': 'token '+token}).json()
 
-def add_to_tag(tag: list[int], index: int) -> list[int]:
+def add_to_tag(tag: list, index: int) -> list:
     while len(tag) < index: tag.append(0)
     tag[index-1] += 1
     return tag
