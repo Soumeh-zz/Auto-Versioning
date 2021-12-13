@@ -11,8 +11,9 @@ jobs:
         uses: Soumeh/Auto-Versioning@dev
       - name: Verify
         run: |
+          echo "${{ steps.versioning.outputs }}"
           echo "${{ steps.versioning.outputs.tag }}"
-          echo "${{ steps.versioning.outputs.json-changelog }}"
+          echo "${{ steps.versioning.outputs.raw-changelog }}"
           echo "${{ steps.versioning.outputs.changelog }}"
       - name: Create Release
         uses: meeDamian/github-release@2.0
