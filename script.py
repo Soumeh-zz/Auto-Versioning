@@ -1,71 +1,74 @@
-from os import getenv
+from sys import argv
 from requests import get
-from json import loads
+from json import loads, dumps
 
-token = getenv('TOKEN', '')
-commits = loads(getenv('COMMITS', '[]'))
-repo = getenv('REPO', '')
 
-def parse_changes(files: list) -> bool:
-    changelog = {"added": [], "renamed": [], "deleted": [], "changed": []}
-    major = False
+def parse_changes(files: list, map: dict) -> bool:
+    changelog = {"added": [], "renamed": [], "removed": [], "modified": []}
+    nums = ()
     for file in files:
+
         status = file['status']
-        if not major:
-            if status == 'renamed' or status == 'added':
-                major = True
         filename = file['filename']
-        if filename in changelog['deleted']:
-            continue
+
+        nums += (map[status],) 
+
         if status == 'renamed':
-            changelog['renamed'].append('`'+file['previous_filename']+'` → `'+filename+'`')
-        if status == 'added':
-            changelog['added'].append('`'+filename+'`')
-        if status == 'removed':
-            changelog['deleted'].append('`'+filename+'`')
-        if status == 'modified':
-            changelog['changed'].append('`'+filename+'`')
-    return changelog, major
+            changelog['renamed'].append([file["previous_filename"], filename])
+        else:
+            changelog[status].append(filename)
+
+    return changelog, min(nums)
 
 def get_data(url: str) -> str:
     return get(url, headers={'Authorization': 'token '+token}).json()
 
-def gen_new_tag(major: bool, tag: str) -> str:
-    tag = ''.join([i for i in tag if i.isnumeric() or i == '.']).split('.')
-    try:
-        tag = [int(i) for i in tag]
-    except ValueError:
-        return getenv('FALLBACK_TAG', '0.0')
-    if major:
-        try:
-            tag[1] += 1
-        except IndexError:
-            tag.append(0)
-        tag[2] = 0
-    else:
-        try:
-            tag[2] += 1
-        except IndexError:
-            tag.append(0)
-            if len(tag) < 2:
-                tag.append(0)
-    return '.'.join([str(i) for i in tag])
+def add_to_tag(tag: list[int], index: int) -> list[int]:
+    while len(tag) < index: tag.append(0)
+    tag[index-1] += 1
+    return tag
+
 
 if __name__ == '__main__':
-    commit_ids = [commit['id'] for commit in commits]
+
+    token, commits, repo, fallback_tag, change_map, separator = argv[1:]
+
+    commits = loads(commits)
+    change_map = loads(change_map)
+
     files = []
-    for commit_id in commit_ids:
-        files += get_data(f'https://api.github.com/repos/{repo}/commits/{commit_id}')['files']
-    changelog, major = parse_changes(files)
+    commit_messages = []
+    for commit in commits:
+        data = get_data(f'https://api.github.com/repos/{repo}/commits/{commit["id"]}')
+        if 'files' in data:
+            for file in data['files']:
+                files.append(file)
+        if 'commit' in data:
+            commit_messages.append(data['commit']['message'])
+    changelog, lowest = parse_changes(files, change_map)
+
+    # check every commit name that starts with [+X]
+    pot_lowest = [int(m.split('[+')[1].split(']')[0]) for m in commit_messages if m.startswith('[+')]
+    if pot_lowest: lowest = min(pot_lowest)
+
     try:
         tag = get_data(f'https://api.github.com/repos/{repo}/tags')[0]['name']
     except IndexError:
-        tag = getenv('FALLBACK_TAG', '0.0')
-    else:
-        tag = gen_new_tag(major, tag)
+        tag = fallback_tag
+    tag = [int(''.join(i for i in value if i.isdigit())) for value in tag.split(separator)]
+    add_to_tag(tag, lowest)
+    tag = separator.join([str(i) for i in tag])
+
     changelog_str = ''
     for change, values in changelog.items():
         if values:
-            changelog_str += f'{change.title()}: '+''.join(['%0A• '+value for value in values])+'%0A'
+            # %0A is just \n but for github action translation purposes
+            if change == 'renamed':
+                changes = ''.join([f'%0A• `{value[0]}` → `{value[1]}`' for value in values])+'%0A'
+            else:
+                changes = ''.join([f'%0A• `{value}`' for value in values])+'%0A'
+            changelog_str += f'{change.title()}: {changes}'
+
     print('::set-output name=tag::'+tag)
+    print('::set-output name=changelog-json::'+dumps(changelog))
     print('::set-output name=changelog::'+changelog_str)

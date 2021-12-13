@@ -1,32 +1,43 @@
-name: 'automatic-actions'
+name: 'Auto Versioning'
 description: 'Get a new version tag for your next release.'
 author: 'Soumeh'
-runs:
-  using: 'docker'
-  image: 'Dockerfile'
-  env:
-    TOKEN: ${{ inputs.token }}
-    COMMITS: ${{ inputs.commits }}
-    REPO: ${{ inputs.repo }}
-    FALLBACK_TAG: ${{ inputs.fallback_tag }}
 inputs:
+  token:
+    description: GitHub Personal Access Token. Auto Populated.
+    default: ${{ github.token }}
+    required: false
   fallback_tag:
     description: If no previous tag was found, use this one.
-    default: 0.0.0
-  token:
-    description: GitHub Personal Access Token. (Auto Populated)
-    default: ${{ github.token }}
+    default: "0.0.0"
+    required: false
   commits:
     description: List of commits to determine the new version with. (Auto Populated)
     default: ${{ toJSON(github.event.commits) }}
+    required: false
   repo:
     description: The repository to scan for the latest version in. (Auto Populated)
     default: ${{ github.repository }}
+    required: false
+  change-map:
+    description: What changes make which part of the version increase. (Explained further in README.MD)
+    default: {"removed": 2, "renamed": 1, "added": 1, "modified": 2}
+    required: false
+  separator:
+    description:
+    default: '.'
+    required: false
 outputs:
   tag:
     description: The new version tag.
+  json-changelog:
+    description: JSON object with raw changelog data.
   changelog:
     description: Multi-line string changelog.
 branding:
   icon:  'chevrons-up'
   color: 'gray-dark'
+runs:
+  - run: python -m pip install -r requirements.txt
+    shell: bash
+  - run: python ${{ github.action_path }}/script.py "${{ inputs.token }}" '${{ inputs.commits }}' "${{ inputs.repo }}" "${{ inputs.fallback-tag }}" '${{ inputs.change-map }}' "${{ inputs.separator }}"
+    shell: bash
