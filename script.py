@@ -39,7 +39,7 @@ if __name__ == '__main__':
     files = []
     commit_messages = []
     for commit in commits:
-        data = get_data(f'https://api.github.com/repos/{repo}/commits/{commit["id"]}', token) # https://api.github.com/repos/Soumeh/Auto-Versioning/commits/ee3aa04c3fe7f9ea398c97a9fe8a72b4ed163509
+        data = get_data(f'https://api.github.com/repos/{repo}/commits/{commit["id"]}', token)
         if 'files' in data:
             for file in data['files']:
                 files.append(file)
@@ -69,10 +69,6 @@ if __name__ == '__main__':
                 changes = ''.join([f'%0A• `{value}`' for value in values])+'%0A'
             changelog_str += f'{change.title()}: {changes}'
 
-    print(tag)
-    print(dumps(changelog))
-    print(changelog_str)
-
     print('::set-output name=tag::'+tag)
-    print('::set-output name=changelog-json::'+dumps(changelog))
+    print('::set-output name=raw-changelog::'+dumps(changelog))
     print('::set-output name=changelog::'+changelog_str)

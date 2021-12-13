@@ -29,7 +29,7 @@ inputs:
 outputs:
   tag:
     description: The new version tag.
-  json-changelog:
+  raw-changelog:
     description: JSON object with raw changelog data.
   changelog:
     description: Multi-line string changelog.
