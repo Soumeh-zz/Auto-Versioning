@@ -1,4 +1,3 @@
-from os import system
 from sys import argv
 from requests import get
 from json import loads, dumps
@@ -32,12 +31,10 @@ def add_to_tag(tag: list, index: int) -> list:
 
 if __name__ == '__main__':
 
-    token, repo, fallback_tag, change_map, separator, commits = argv[1:]
-
-    print(commits.replace('\\n', '').replace("'", "\\'"))
+    token, repo, change_map, separator, commits = argv[1:]
 
     commits = loads(commits.replace('\\n', '').replace("'", "\\'"))
-    change_map = loads(change_map)
+    change_map = loads(change_map.replace('\\n', '').replace("'", "\\'"))
 
     files = []
     commit_messages = []
@@ -57,7 +54,7 @@ if __name__ == '__main__':
     try:
         tag = get_data(f'https://api.github.com/repos/{repo}/tags', token)[0]['name']
     except IndexError:
-        tag = fallback_tag
+        tag = '0.0.0'
     tag = [int(''.join(i for i in value if i.isdigit())) for value in tag.split(separator)]
     add_to_tag(tag, lowest)
     tag = separator.join([str(i) for i in tag])
