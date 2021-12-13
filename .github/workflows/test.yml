@@ -11,7 +11,6 @@ jobs:
         uses: Soumeh/Auto-Versioning@dev
       - name: Verify
         run: |
-          echo "${{ steps.versioning.outputs }}"
           echo "${{ steps.versioning.outputs.tag }}"
           echo "${{ steps.versioning.outputs.raw-changelog }}"
           echo "${{ steps.versioning.outputs.changelog }}"
