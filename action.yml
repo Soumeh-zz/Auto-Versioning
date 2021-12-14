@@ -38,7 +38,7 @@ branding:
 runs:
   using: "composite"
   steps:
-  - run: python -m pip install -r requirements.txt
+  - run: python -m pip install -r ${{ github.action_path }}/requirements.txt
     shell: bash
   - id: logic
     run: python ${{ github.action_path }}/script.py "${{ inputs.token }}" "${{ inputs.repo }}" ${{ toJSON(inputs.change-map) }} "${{ inputs.separator }}" ${{ toJSON(inputs.commits) }}
